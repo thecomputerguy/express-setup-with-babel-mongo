@@ -1,25 +1,30 @@
-let users = {
-  1: {
-    id: '1',
-    username: 'Robin Wieruch',
+import mongoose from 'mongoose'
+
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      unique: true,
+      required: true
+    }
   },
-  2: {
-    id: '2',
-    username: 'Dave Davids',
-  },
-};
+  {timestamps: true}
+);
+
+userSchema.statics.findByLogin = async function (login) {
+  let user = await this.findOne({
+    username: login,
+  });
  
-let messages = {
-  1: {
-    id: '1',
-    text: 'Hello World',
-    userId: '1',
-  },
-  2: {
-    id: '2',
-    text: 'By World',
-    userId: '2',
-  },
+  if (!user) {
+    user = await this.findOne({ email: login });
+  }
+ 
+  return user;
 };
 
-export {users, messages}
+userSchema.pre('remove', function(next) {
+  this.model('Message').deleteMany({user: this._id}, next)
+})
+const User = mongoose.model('User', userSchema)
+export default User

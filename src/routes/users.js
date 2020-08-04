@@ -1,14 +1,13 @@
 import {Router} from "express"
-import { users } from "../models/users"
 
 const router = Router()
 
-router.get('/', (req, res) => {
-    return res.json({users: Object.values(req.context.models.users)})
+router.get('/', async (req, res) => {
+    return res.json({users: Object.values( await req.context.models.User.find())})
 })
 
-router.get('/:userId', (req, res) => {
-    return res.json({user: req.context.models.users[req.params.userId]})
+router.get('/:userId', async (req, res) => {
+    return res.json({user: await req.context.models.User.findById(req.params.userId)})
 })
 
 router.post('/', (req, res) => {

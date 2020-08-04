@@ -2,8 +2,8 @@ import {Router} from "express"
 
 const router = Router()
 
-router.get('/', (req, res)=>{
-    return res.json({user: req.context.models.users[req.context.me.id]})
+router.get('/', async (req, res)=>{
+    return res.json({user: await req.context.models.User.findById(req.context.me.id)})
 })
 
 export default router
